@@ -1,0 +1,18 @@
+Package: rbridge
+Title: Restricted Bridge Estimation
+Version: 1.0
+Date: 2019-03-13
+Author: Bahadir Yuzbasi, Mohammad Arashi, Fikri Akdeniz
+Maintainer: Bahadir Yuzbasi <b.yzb@hotmail.com>
+Description: What the package does (one paragraph).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.5.3)
+Suggests: 
+    methods,
+    utils,
+    stats,
+    testthat
+LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 6.1.1
