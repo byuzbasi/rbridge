@@ -1,0 +1,19 @@
+{
+  "run_id": "full-benchmark",
+  "phase": "COMPLETED",
+  "work_unit": "design/exponent/method/engine shard",
+  "total": 96,
+  "completed": 96,
+  "running": 0,
+  "failed": 0,
+  "pending": 0,
+  "percent": 100,
+  "elapsed_seconds": 1431.8701,
+  "units_per_second": 0.067,
+  "estimated_remaining_seconds": 0,
+  "estimated_completion": "2026-10-10 18:00:21 UTC",
+  "eta_scope": "timing shards only; final comparison and manifest validation follow",
+  "timestamp": "2026-10-10 18:00:21 UTC",
+  "last_completed": "wide_2_cv.rbridge_candidate",
+  "current_unit": "final validation"
+}

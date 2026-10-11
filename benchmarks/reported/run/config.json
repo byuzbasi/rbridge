@@ -1,0 +1,79 @@
+{
+  "config": {
+    "schema": 1,
+    "seed": 2019,
+    "repeats": 15,
+    "warmup": 2,
+    "designs": [
+      {
+        "id": "small",
+        "n": 80,
+        "p": 16
+      },
+      {
+        "id": "medium",
+        "n": 300,
+        "p": 60
+      },
+      {
+        "id": "larger",
+        "n": 500,
+        "p": 180
+      },
+      {
+        "id": "wide",
+        "n": 60,
+        "p": 120
+      }
+    ],
+    "exponents": [0.5, 1, 2],
+    "lambda": [10, 8.1855, 6.7002, 5.4844, 4.4893, 3.6747, 3.0079, 2.4621, 2.0153, 1.6496, 1.3503, 1.1053, 0.9047, 0.7406, 0.6062, 0.4962, 0.4062, 0.3325, 0.2721, 0.2228, 0.1823, 0.1492, 0.1222, 0.1],
+    "methods": ["bridge", "rbridge", "cv.bridge", "cv.rbridge"],
+    "folds": 5,
+    "coefficient_relative_tolerance": 1e-08,
+    "support_threshold": 1e-07,
+    "requested_threads": 1,
+    "scientific_scope": "synthetic engine timing only; historical preprocessing and estimators preserved",
+    "convergence_scope": "historical stopping rule; no convergence certificate or accuracy ranking claimed"
+  },
+  "metadata": {
+    "R": "4.6.0",
+    "platform": "aarch64-apple-darwin23",
+    "dependencies": {
+      "digest": "0.6.39",
+      "jsonlite": "2.0.0",
+      "microbenchmark": "1.5.0"
+    },
+    "numerical_dependencies": {
+      "Rcpp": "1.1.1.1.1",
+      "RcppArmadillo": "15.2.7.1",
+      "Matrix": "1.7.5"
+    },
+    "hardware": {
+      "system": "Darwin",
+      "architecture": "arm64",
+      "logical_cores": 11,
+      "cpu": "Apple M3 Pro"
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "BLIS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    },
+    "engines": {
+      "baseline": {
+        "version": "1.0.3",
+        "hash": "0456512e3b8b11a0558291a16c670bcabfba69d0a9e55864913b89d60324e8fd"
+      },
+      "candidate": {
+        "version": "1.0.3",
+        "hash": "5451514666bb61fb0f58a40700dd91bffa4dd6b90e6ea405189ddd98f263471a"
+      }
+    },
+    "driver_sha256": "7cb7ce19d4d0a62235e95c12438d74304958e108f2ca4cfdc92a0002d0514b6d"
+  },
+  "signature": "d380a67d11b9517ad9f5601dfb5b1ae94ca0f0897cbb8e091f2fad8bab122be7"
+}

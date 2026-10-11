@@ -1,0 +1,5 @@
+{
+  "original_sha256": "1c93cb40cf08c6fb873ca80c4348d60f283dbfdc19328bd82766647bc93acf82",
+  "public_sha256": "d729fdd90adf3d0852aba1a6c171362ab227f4c25368daab6baf4fbcd62377fb",
+  "normalization": "tar ownership/timestamps and DESCRIPTION packager; other file contents unchanged"
+}

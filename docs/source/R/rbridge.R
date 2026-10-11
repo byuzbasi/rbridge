@@ -1,0 +1,208 @@
+#' @useDynLib rbridge, .registration = TRUE
+#' @importFrom Rcpp evalCpp
+#' @importFrom methods is
+NULL
+#' @importFrom stats model.matrix predict
+#' @importFrom graphics abline axis points segments
+#' @importClassesFrom Matrix dgCMatrix
+#' 
+#' @title Fit a restricted bridge coefficient path
+#' @description
+#' Fit a bridge-penalized least-squares path subject to user-supplied linear
+#' restrictions on standardized slopes, using local quadratic approximation.
+#' @param X Numeric design matrix with \code{n} observation rows and \code{p}
+#' predictor columns. Supply finite values and predictors with nonzero variation;
+#' omit an intercept column. A data frame is converted using \code{model.matrix(~0+., X)};
+#' restrictions and future predictions must use the resulting predictor order.
+#' @param y Numeric response vector of length \code{n}, containing finite values.
+#' @param q Bridge-penalty exponent, a finite number in \code{(0, 2]}.
+#' Values 1 and 2 specify the L1 and L2 penalty forms. Estimation uses local
+#' quadratic approximation (LQA).
+#' @param lambda Optional nonempty numeric vector of finite, nonnegative penalty
+#' values. Its order is retained. When supplied, it determines the fitted path
+#' and overrides \code{nlambda} and the grid argument \code{lambda.min}.
+#' @param lambda.min Positive absolute endpoint of the automatically generated
+#' penalty grid. The default is \code{0.001} when \code{n > p}, and \code{0.05}
+#' otherwise. This argument is a penalty value, not a ratio. In CV results,
+#' the field also named \code{lambda.min} instead denotes the selected penalty.
+#' @param nlambda Number of automatically generated penalty values, an integer
+#' of at least 2. The default is \code{100}; ignored when \code{lambda} is supplied.
+#' @param eta Positive numerical tolerance, with default \code{1e-7}.
+#' Used for coefficient elimination and stopping on squared coefficient changes.
+#' @param converge Nonnegative initial convergence-distance value, retained for
+#' compatibility. The default is \code{1e10}. Iteration stops when the updated
+#' squared coefficient change is at most \code{eta}, or at the historical cap.
+#' @param R Finite numeric matrix with \code{m} linearly independent
+#' restriction rows and \code{p} predictor columns. Each row specifies a linear
+#' combination of the standardized predictor coefficients, in the order of \code{X}.
+#' The intercept is excluded.
+#' @param r Finite numeric target vector of length \code{m}, or an \code{m}
+#' by 1 matrix. The targets have the units of the response when \code{R} is
+#' dimensionless. See Details for the coefficient scale and a residual check.
+#'
+#' @details
+#' Predictors are centered and divided by their centered root-mean-square
+#' (RMS) deviations, using the observation count \code{n} as the divisor.
+#' The response is centered. The intercept is reconstructed after fitting,
+#' and returned coefficients are expressed on the original predictor scale.
+#' The generated penalties are logarithmically spaced between an internally
+#' computed starting value and the absolute endpoint \code{lambda.min}.
+#' Restrictions act on standardized slopes. To check a fitted original-scale
+#' slope vector, multiply it elementwise by the centered RMS deviations of
+#' the predictors before applying \code{R}. The resulting restriction residual
+#' is the fitted linear combination minus \code{r}; it should be examined
+#' with a numerical tolerance, particularly after coefficient thresholding.
+#' For example, a zero restriction on one slope has the same meaning on
+#' either scale, whereas a nonzero sum or contrast depends on the scales.
+#'
+#' Let \eqn{Z} be the \eqn{n} by \eqn{p} centered, RMS-standardized
+#' design, \eqn{y_c} the centered response vector of length \eqn{n}, and
+#' \eqn{b} the \eqn{p}-dimensional standardized slope vector.
+#' For exponent \eqn{q \in (0,2]} and penalty weight \eqn{\lambda \ge 0},
+#' Equation (1) defines the penalized least-squares target:
+#' \deqn{\min_{b:\,Rb=r}
+#' \left\{\|y_c-Zb\|_2^2+\lambda\sum_{j=1}^{p}|b_j|^q\right\}. \qquad (1)}
+#' In Equation (1), \eqn{\|\cdot\|_2^2} is the squared Euclidean norm,
+#' so its first term is the unnormalized residual sum of squares.
+#' The index \eqn{j} runs over the predictors; the second term is the bridge
+#' penalty, with \eqn{\lambda} controlling its weight relative to residual error.
+#' Here \eqn{R} is an \eqn{m} by \eqn{p} matrix with independent rows and \eqn{r} is the \eqn{m}-dimensional target vector. The condition \eqn{Rb=r} restricts the standardized slopes and excludes the intercept.
+#' The fitting routine applies the article's LQA updates, coefficient elimination
+#' and stopping rules. The criterion is nonconvex when \eqn{q < 1}, so the
+#' iterative result is not a guarantee of a global minimum. The getting-started
+#' vignette explains the penalty geometry and the fixed-LQA restriction correction.
+#'
+#' @return A list of class \code{rbridge} with components:
+#' \item{betas}{Numeric coefficient matrix with \code{p + 1} rows and
+#' \code{length(lambda)} columns, one column per fitted penalty.
+#' The first row is \code{(Intercept)}; the remaining rows are original-scale
+#' slopes in predictor order. Column names identify the fitted penalties.}
+#' \item{lambda}{Numeric vector of penalties, in fitted column order.}
+#'
+#' @references Yuzbasi, B., Arashi, M. and Akdeniz, F. (2021).
+#' Penalized regression via the restricted bridge estimator.
+#' Soft Computing, 25, 8401--8416. \doi{10.1007/s00500-021-05763-9}.
+#' @author Bahadir Yuzbasi \cr Maintainer: Bahadir Yuzbasi \email{b.yzb@hotmail.com}
+#' @seealso \code{\link{cv.rbridge}}, \code{\link{coef.rbridge}}, \code{\link{predict.rbridge}}
+#' @examples
+#' # Reproducible synthetic demonstration: 100 observations, eight predictors.
+#' set.seed(2019)
+#' beta <- c(3, 1.5, 0, 0, 2, 0, 0, 0)
+#' p <- length(beta)
+#' beta <- matrix(beta, nrow = p, ncol = 1)
+#' n <- 100
+#' X <- matrix(rnorm(n * p), nrow = n, ncol = p)
+#' y <- as.numeric(X %*% beta + rnorm(n))
+#' # A user-specified sum of standardized slopes: b[1] + b[2] + b[5] = 6.5.
+#' # This target is illustrative; it is not asserted to equal the generating sum.
+#' R1.mat <- matrix(c(1, 1, 0, 0, 1, 0, 0, 0), nrow = 1)
+#' r1.vec <- matrix(6.5, nrow = 1, ncol = 1)
+#' # A second standardized-slope contrast: -b[1] + b[2] + b[5] = 0.5.
+#' R2.mat <- matrix(c(-1, 1, 0, 0, 1, 0, 0, 0), nrow = 1)
+#' r2.vec <- matrix(0.5, nrow = 1, ncol = 1)
+#' # Impose both independent restrictions together.
+#' R3.mat <- rbind(R1.mat, R2.mat)
+#' r3.vec <- matrix(c(6.5, 0.5), ncol = 1)
+#' # Alternatively, set the five inactive generating slopes to zero.
+#' p.active <- which(beta != 0)
+#' R4.mat <- diag(p)[-p.active, , drop = FALSE]
+#' r4.vec <- matrix(rep(0, p - length(p.active)), ncol = 1)
+#'
+#' # Five penalties keep this help example fast; the default is 100.
+#' model1 <- rbridge(X, y, q = 1, R = R1.mat, r = r1.vec, nlambda = 5)
+#' model2 <- rbridge(X, y, q = 1, R = R2.mat, r = r2.vec, nlambda = 5)
+#' model3 <- rbridge(X, y, q = 1, R = R3.mat, r = r3.vec, nlambda = 5)
+#' model4 <- rbridge(X, y, q = 1, R = R4.mat, r = r4.vec, nlambda = 5)
+#' # Rows include the intercept; columns correspond to fitted penalties.
+#' dim(model1$betas)
+#' # Extract the second fitted penalty exactly; no interpolation is performed.
+#' selected <- model1$lambda[2]
+#' coefficients <- coef(model1, s = selected)
+#' coefficients
+#' predict(model1, newx = X[1:5, , drop = FALSE], s = selected)
+#' # Convert returned slopes to standardized slopes before checking the target.
+#' x_centered <- sweep(X, 2, colMeans(X), "-")
+#' x_rms <- sqrt(colMeans(x_centered^2))
+#' standardized_slopes <- coefficients[-1, 1] * x_rms
+#' as.numeric(R1.mat %*% standardized_slopes - r1.vec)
+#' @export
+rbridge <- function(X, y, q=1, R,r,lambda.min=ifelse(n>p,.001,.05), nlambda=100,
+                   lambda, eta=1e-7, converge=10^10) {
+  
+  # Coersion
+  if (!is(X, "matrix")) {
+    tmp <- try(X <- model.matrix(~0+., data=X), silent=TRUE)
+    if (class(tmp)[1] == "try-error") 
+      stop("X must be a matrix or able to be coerced to a matrix")
+  }
+  if (storage.mode(X)=="integer") 
+    storage.mode(X) <- "double"
+  
+  if (!is(y, "numeric")) {
+    tmp <- try(y <- as.numeric(y), silent=TRUE)
+    if (class(tmp)[1] == "try-error") 
+      stop("y must numeric or able to be coerced to numeric")
+  }
+  
+  
+  # Error checking
+  if (any(is.na(y)) | any(is.na(X))) stop("Missing data (NA's) detected.  Take actions (e.g., removing cases, removing features, imputation) to eliminate missing data before passing X and y to ncvreg")
+  if (length(y) != nrow(X)) stop("X and y do not have the same number of observations")
+  
+  .validate_bridge_data(X, y, q, eta, converge)
+  .validate_bridge_restriction(R, r, ncol(X))
+  r <- matrix(r, ncol = 1L)
+
+  ## Set up XX, yy, lambda
+  stdX <- standard(X)
+  XX <- stdX$xx
+  p <- ncol(XX)
+  ns <- c(1:p)
+  yy <- y - mean(y)
+  n <- length(yy)
+  
+  if (missing(lambda)) {
+    if (length(nlambda) != 1L || !is.finite(nlambda) ||
+        nlambda != as.integer(nlambda) || nlambda < 2L)
+      stop("nlambda must be an integer of at least 2")
+    if (length(lambda.min) != 1L || !is.finite(lambda.min) || lambda.min <= 0)
+      stop("lambda.min must be a finite positive number")
+    #lambda <- as.double(rev(sort(Lambdas_Grid(XX, yy,q,lambda.min, nlambda))))
+    lambda <- Lambdas_Grid(XX, yy,q,lambda.min, nlambda)
+    user.lambda <- FALSE
+  } else {
+    nlambda <- length(lambda)
+    user.lambda <- TRUE
+  }
+  .validate_bridge_lambda(lambda)
+    
+  ## Fit
+    fit <- RBridge(XX, yy, q, lambda, R, r,converge, eta)
+    constant <- rep(mean(y),nlambda)
+    betas <- matrix(fit, p, nlambda)
+    #loss <- res[[2]]
+    #iter <- res[[3]]
+    
+    
+  ## Unstandardize
+  unbetas <- matrix(0, nrow=(ncol(X)+1), ncol=length(lambda))
+  #bbetas <- betas/attr(XX, "scale")[ns]
+  #bbetas <- betas # if unstandard
+  bbetas <- betas/as.vector(stdX$s)
+  unbetas[ns+1,] <- bbetas  
+  unbetas[1,] <- constant - crossprod(as.vector(stdX$c), bbetas)
+  
+  
+  
+  ## Names
+  varnames <- if (is.null(colnames(X))) paste("V",1:ncol(X),sep="") else colnames(X)
+  varnames <- c("(Intercept)", varnames)
+  dimnames(unbetas) <- list(varnames, lambda)
+  
+  
+  ## Output
+  output <- structure(list(betas = unbetas,
+                        lambda = lambda),
+                   class = "rbridge")
+  output
+}

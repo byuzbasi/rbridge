@@ -1,0 +1,13 @@
+:root { --bridge-ink: #152b3d; --bridge-teal: #136b70; }
+body { color: var(--bridge-ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; }
+.navbar { box-shadow: 0 2px 12px rgba(21,43,61,.09); }
+.navbar-brand { font-weight: 700; letter-spacing: -.02em; }
+main h1, main h2, main h3 { letter-spacing: -.025em; line-height: 1.25; }
+main h1 { margin-bottom: 1.2rem; }
+main p, main li { -webkit-hyphens: none !important; hyphens: none !important; }
+main h2 { margin-top: 2.2rem; padding-bottom: .45rem; border-bottom: 1px solid #e4ecee; }
+pre { border: 1px solid #e0e9ec; border-radius: .6rem; padding: 1rem; }
+.table th { color: var(--bridge-teal); }
+.page-header { border-bottom-color: #e4ecee; }
+main img { max-width: 100%; height: auto; }
+@media (max-width: 767px) { main h1 { font-size: 2rem; } pre { font-size: .82rem; } }

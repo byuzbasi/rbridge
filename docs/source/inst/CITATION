@@ -1,0 +1,12 @@
+bibentry(
+  bibtype = "Article",
+  title = "Penalized regression via the restricted bridge estimator",
+  author = c(person("Bahadir", "Yuzbasi"), person("Mohammad", "Arashi"),
+             person("Fikri", "Akdeniz")),
+  journal = "Soft Computing",
+  year = "2021",
+  volume = "25",
+  pages = "8401--8416",
+  doi = "10.1007/s00500-021-05763-9",
+  header = "To cite the methodology implemented in rbridge, use:"
+)

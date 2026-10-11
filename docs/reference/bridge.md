@@ -1,0 +1,177 @@
+# Fit a Bridge Estimation
+
+Fit a bridge-penalized least-squares path using local quadratic
+approximation. Computes coefficients over the fitted penalty grid using
+the historical thresholding and stopping rules.
+
+## Usage
+
+``` r
+bridge(
+  X,
+  y,
+  q = 1,
+  lambda.min = ifelse(n > p, 0.001, 0.05),
+  nlambda = 100,
+  lambda,
+  eta = 1e-07,
+  converge = 10^10
+)
+```
+
+## Arguments
+
+- X:
+
+  Design matrix with n observation rows and p predictor columns.
+
+- y:
+
+  Numeric response vector with one value per observation.
+
+- q:
+
+  Bridge-penalty exponent in (0, 2\]. Values one and two give the L1 and
+  L2 penalty forms; fitting uses local quadratic approximation.
+
+- lambda.min:
+
+  The smallest value for lambda if `n>p` is `0.001` and `0.05`
+  otherwise.
+
+- nlambda:
+
+  The number of lambda values - default is `100`
+
+- lambda:
+
+  User-supplied nonnegative penalty sequence; generated internally when
+  omitted.
+
+- eta:
+
+  Positive threshold used for coefficient elimination and the squared
+  coefficient-change stopping rule. The default is `1e-7`; it is
+  unchanged from the historical solver.
+
+- converge:
+
+  Initial convergence-distance value, retained for compatibility. The
+  default is `10^10`. The solver updates the squared Euclidean
+  coefficient change and stops when it is at most `eta`, or after the
+  historical iteration cap.
+
+## Value
+
+An object of class bridge, a list with entries
+
+- betas:
+
+  Coefficients computed over the path of lambda
+
+- lambda:
+
+  The lambda values which is given at the function
+
+## Details
+
+Computes bridge estimation
+
+## References
+
+Yuzbasi, B., Arashi, M. and Akdeniz, F. (2021). Penalized regression via
+the restricted bridge estimator. Soft Computing, 25, 8401–8416.
+[doi:10.1007/s00500-021-05763-9](https://doi.org/10.1007/s00500-021-05763-9)
+.
+
+## See also
+
+[`cv.bridge`](cv.bridge.md)
+
+## Author
+
+Bahadir Yuzbasi, Mohammad Arashi and Fikri Akdeniz  
+Maintainer: Bahadir Yuzbasi <b.yzb@hotmail.com>
+
+## Examples
+
+``` r
+set.seed(2019) 
+beta <- c(3, 1.5, 0, 0, 2, 0, 0, 0)
+p <- length(beta)
+beta <- matrix(beta, nrow = p, ncol = 1)
+
+n = 100
+X = matrix(rnorm(n*p),n,p)
+y = X%*%beta + rnorm(n) 
+
+model1 <- bridge(X, y, q = 1, nlambda = 5)
+print(model1)
+#> $betas
+#>             802.149726533951 26.8035044402758 0.895628118436414
+#> (Intercept)    -6.412489e-01    -3.121540e-02        0.02127596
+#> V1              1.232328e-03     2.848999e+00        2.96822233
+#> V2              0.000000e+00     1.433841e+00        1.56711565
+#> V3              0.000000e+00     1.282147e-04        0.06806783
+#> V4              0.000000e+00    -1.150407e-05       -0.08208236
+#> V5              3.129117e-05     1.879705e+00        1.98231627
+#> V6              0.000000e+00    -1.064341e-04       -0.09139546
+#> V7              0.000000e+00     8.497907e-08        0.06236402
+#> V8              0.000000e+00    -1.609602e-05       -0.01928428
+#>             0.0299270466039737       0.001
+#> (Intercept)         0.02426219  0.02436200
+#> V1                  2.97250618  2.97264933
+#> V2                  1.57283276  1.57302384
+#> V3                  0.07447441  0.07468856
+#> V4                 -0.08731409 -0.08748886
+#> V5                  1.98518663  1.98528242
+#> V6                 -0.09841349 -0.09864804
+#> V7                  0.07120272  0.07149838
+#> V8                 -0.02571779 -0.02593340
+#> 
+#> $lambda
+#>              [,1]
+#> [1,] 802.14972653
+#> [2,]  26.80350444
+#> [3,]   0.89562812
+#> [4,]   0.02992705
+#> [5,]   0.00100000
+#> 
+#> attr(,"class")
+#> [1] "bridge"
+
+model2 <- bridge(X, y, q = 2, nlambda = 5)
+print(model2)
+#> $betas
+#>             40107.4863266975 503.986708518281 6.33304715967736
+#> (Intercept)    -0.6395890057      -0.52600174      -0.01372693
+#> V1              0.0088526374       0.56837767       2.81984333
+#> V2              0.0045644036       0.29364959       1.48896890
+#> V3              0.0003809337       0.02213786       0.07192869
+#> V4              0.0008297924       0.04282305      -0.05936483
+#> V5              0.0061107545       0.38751914       1.88142530
+#> V6              0.0005318734       0.02634813      -0.07546794
+#> V7             -0.0013956004      -0.06838175       0.04452534
+#> V8             -0.0016262036      -0.08460553      -0.04921121
+#>             0.0795804445807973       0.001
+#> (Intercept)         0.02385767  0.02435906
+#> V1                  2.97062924  2.97262881
+#> V2                  1.57191349  1.57301640
+#> V3                  0.07465778  0.07469548
+#> V4                 -0.08709909 -0.08748992
+#> V5                  1.98390242  1.98526833
+#> V6                 -0.09833115 -0.09865206
+#> V7                  0.07113750  0.07150393
+#> V8                 -0.02626757 -0.02594497
+#> 
+#> $lambda
+#>              [,1]
+#> [1,] 4.010749e+04
+#> [2,] 5.039867e+02
+#> [3,] 6.333047e+00
+#> [4,] 7.958044e-02
+#> [5,] 1.000000e-03
+#> 
+#> attr(,"class")
+#> [1] "bridge"
+```

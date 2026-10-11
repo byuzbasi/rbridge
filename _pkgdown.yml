@@ -1,0 +1,49 @@
+url: https://byuzbasi.github.io/rbridge/
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#136b70"
+    link-color: "#136b70"
+    border-radius: "0.45rem"
+development:
+  mode: unreleased
+authors:
+  footer:
+    roles: [cre]
+    text: "Code and website developed by"
+  sidebar:
+    roles: [aut, cre]
+home:
+  title: "rbridge · Restricted Bridge Estimation"
+  description: "Bridge regression with linear coefficient restrictions, compiled solvers, and a clear R interface."
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    intro:
+      text: Get started
+      href: articles/getting-started.html
+    articles:
+      text: Guides
+      menu:
+      - text: Getting started
+        href: articles/getting-started.html
+      - text: Reproducibility and validation
+        href: articles/reproducibility.html
+reference:
+- title: Fit a coefficient path
+  desc: Restricted and unrestricted bridge regression.
+  contents: [bridge, rbridge]
+- title: Cross-validation
+  desc: Select a penalty using the historical fold and error conventions.
+  contents: [cv.bridge, cv.rbridge, plot.cv.bridge, plot.cv.rbridge]
+- title: Coefficients and predictions
+  contents: [coef.bridge, coef.rbridge, coef.cv.bridge, coef.cv.rbridge,
+             predict.bridge, predict.rbridge, predict.cv.bridge, predict.cv.rbridge]
+- title: Build capabilities
+  contents: [rbridge_info]
+articles:
+- title: Guides
+  navbar: ~
+  contents: [getting-started, reproducibility]

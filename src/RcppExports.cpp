@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // standard
 List standard(const arma::mat& x);
 RcppExport SEXP _rbridge_standard(SEXP xSEXP) {
@@ -14,6 +19,16 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(standard(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Engine_Info
+List Engine_Info();
+RcppExport SEXP _rbridge_Engine_Info() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(Engine_Info());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -120,6 +135,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rbridge_standard", (DL_FUNC) &_rbridge_standard, 1},
+    {"_rbridge_Engine_Info", (DL_FUNC) &_rbridge_Engine_Info, 0},
     {"_rbridge_BetaIntial", (DL_FUNC) &_rbridge_BetaIntial, 3},
     {"_rbridge_Lambdas_Grid", (DL_FUNC) &_rbridge_Lambdas_Grid, 5},
     {"_rbridge_Bridge", (DL_FUNC) &_rbridge_Bridge, 6},

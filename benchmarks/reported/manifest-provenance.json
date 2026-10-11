@@ -1,0 +1,5 @@
+{
+  "original_manifest_sha256": "d84dc39a57a74bcee83d028f98715a645c7ca68a0854b004ede8ce3369e41809",
+  "public_manifest_sha256": "723dda48df3b9019e915fca2c75bbc4f2cb8bb553306fd66f1fbb1c5206285eb",
+  "change": "generic local R-framework paths in sessionInfo.txt replaced; all shards and configuration unchanged"
+}

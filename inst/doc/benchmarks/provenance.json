@@ -1,0 +1,90 @@
+{
+  "signature": "d380a67d11b9517ad9f5601dfb5b1ae94ca0f0897cbb8e091f2fad8bab122be7",
+  "source_manifest_sha256": "d84dc39a57a74bcee83d028f98715a645c7ca68a0854b004ede8ce3369e41809",
+  "config": {
+    "schema": 1,
+    "seed": 2019,
+    "repeats": 15,
+    "warmup": 2,
+    "designs": [
+      {
+        "id": "small",
+        "n": 80,
+        "p": 16
+      },
+      {
+        "id": "medium",
+        "n": 300,
+        "p": 60
+      },
+      {
+        "id": "larger",
+        "n": 500,
+        "p": 180
+      },
+      {
+        "id": "wide",
+        "n": 60,
+        "p": 120
+      }
+    ],
+    "exponents": [0.5, 1, 2],
+    "lambda": [10, 8.18546730706903, 6.70018750350959, 5.48441657612102, 4.48925125821861, 3.67466194073669, 3.0078825180431, 2.46209240149463, 2.01533768594173, 1.64964807409802, 1.35031403786987, 1.10529514112602, 0.90473572423493, 0.740568469226243, 0.606189899349757, 0.49619476030029, 0.406158598837698, 0.332459793227094, 0.272133876837531, 0.222754295199956, 0.182334800086844, 0.149249554505183, 0.122167734899679, 0.1],
+    "methods": ["bridge", "rbridge", "cv.bridge", "cv.rbridge"],
+    "folds": 5,
+    "coefficient_relative_tolerance": 1e-08,
+    "support_threshold": 1e-07,
+    "requested_threads": 1,
+    "scientific_scope": "synthetic engine timing only; historical preprocessing and estimators preserved",
+    "convergence_scope": "historical stopping rule; no convergence certificate or accuracy ranking claimed"
+  },
+  "environment": {
+    "R": "4.6.0",
+    "platform": "aarch64-apple-darwin23",
+    "dependencies": {
+      "digest": "0.6.39",
+      "jsonlite": "2.0.0",
+      "microbenchmark": "1.5.0"
+    },
+    "numerical_dependencies": {
+      "Rcpp": "1.1.1.1.1",
+      "RcppArmadillo": "15.2.7.1",
+      "Matrix": "1.7.5"
+    },
+    "hardware": {
+      "system": "Darwin",
+      "architecture": "arm64",
+      "logical_cores": 11,
+      "cpu": "Apple M3 Pro"
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "BLIS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    },
+    "engines": {
+      "baseline": {
+        "version": "1.0.3",
+        "hash": "0456512e3b8b11a0558291a16c670bcabfba69d0a9e55864913b89d60324e8fd"
+      },
+      "candidate": {
+        "version": "1.0.3",
+        "hash": "5451514666bb61fb0f58a40700dd91bffa4dd6b90e6ea405189ddd98f263471a"
+      }
+    },
+    "driver_sha256": "7cb7ce19d4d0a62235e95c12438d74304958e108f2ca4cfdc92a0002d0514b6d"
+  },
+  "validated_shards": 96,
+  "comparison_cases": 48,
+  "maximum_relative_difference": 5.51051573567541e-14,
+  "maximum_prediction_difference": 3.31049398203845e-15,
+  "exact_selection_support_counts": true,
+  "timer_notices": "less accurate nanosecond times to avoid potential integer overflows",
+  "baseline_scope": "first repaired 1.0.3 candidate, not a direct comparison with CRAN 1.0.2",
+  "timing_scope": "single recorded machine; fixed baseline-then-candidate order; no randomized engine order",
+  "validation_scope": "historical estimator compatibility, not convergence or global optimality certification",
+  "numerical_fits_executed_by_analysis": false
+}

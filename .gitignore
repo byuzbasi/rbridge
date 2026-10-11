@@ -1,2 +1,11 @@
-inst/doc
-.Rproj.user
+.Rproj.user/
+.RData
+.Rhistory
+src/*.o
+src/*.so
+src/*.dll
+*.Rcheck/
+.DS_Store
+
+output/
+library/

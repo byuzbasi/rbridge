@@ -1,0 +1,13 @@
+---
+title: "Reproducibility and validation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reproducibility and validation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r guide, echo=FALSE, results='asis'}
+guide <- readLines("../inst/doc/reproducibility.md", warn = FALSE)
+knitr::asis_output(paste(guide[-1L], collapse = "\n"))
+```

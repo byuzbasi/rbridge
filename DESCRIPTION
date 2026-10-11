@@ -1,18 +1,32 @@
 Package: rbridge
+Type: Package
 Title: Restricted Bridge Estimation
-Version: 1.0
-Date: 2019-03-13
-Author: Bahadir Yuzbasi, Mohammad Arashi, Fikri Akdeniz
-Maintainer: Bahadir Yuzbasi <b.yzb@hotmail.com>
-Description: What the package does (one paragraph).
+Version: 1.0.3
+Date: 2026-10-10
+Authors@R: c(
+    person("Bahadir", "Yuzbasi", role = c("aut", "cre"),
+           email = "b.yzb@hotmail.com"),
+    person("Mohammad", "Arashi", role = "aut"),
+    person("Fikri", "Akdeniz", role = "aut"),
+    person("Jerome", "Friedman", role = "ctb",
+           comment = "Utility functions adapted from glmnet"),
+    person("Trevor", "Hastie", role = "ctb",
+           comment = "Utility functions adapted from glmnet"),
+    person("Robert", "Tibshirani", role = "ctb",
+           comment = "Utility functions adapted from glmnet"))
+Description: Implements bridge regression with linear coefficient restrictions
+    using the local quadratic approximation described by Yuzbasi, Arashi and
+    Akdeniz (2021) <doi:10.1007/s00500-021-05763-9>. Provides coefficient paths,
+    cross-validation, prediction and coefficient extraction for restricted and
+    unrestricted linear models.
 License: GPL-3
+Imports: Rcpp, Matrix, methods, graphics, stats, utils
+Suggests: testthat, knitr, rmarkdown
+VignetteBuilder: knitr
 Encoding: UTF-8
-LazyData: true
-Depends: R (>= 3.5.3)
-Suggests: 
-    methods,
-    utils,
-    stats,
-    testthat
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.1.1
+RoxygenNote: 7.3.3
+NeedsCompilation: yes
+URL: https://byuzbasi.github.io/rbridge/,
+    https://github.com/byuzbasi/rbridge
+BugReports: https://github.com/byuzbasi/rbridge/issues

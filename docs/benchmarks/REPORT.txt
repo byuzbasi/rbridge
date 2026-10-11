@@ -1,0 +1,26 @@
+rbridge 1.0.3 completed benchmark evaluation
+
+All 96 shards and 48 comparisons pass checksum, shape and numerical validation.
+Ratios divide the baseline median time by the candidate median time.
+Each case uses 15 timed fits per engine, after two warmups; process startup is excluded.
+q is the bridge-penalty exponent; n is observations and p is predictors.
+The four synthetic designs use seed 2019, q=0.5/1/2, 24 penalties and five CV folds.
+CV and BLAS each use one thread; this measures serial engine optimization.
+
+group         median_speedup   min_speedup   max_speedup   cases
+-----------  ---------------  ------------  ------------  ------
+bridge                  3.14          1.52         14.62      12
+rbridge                 2.59          1.18          3.93      12
+cv.bridge               2.99          1.31         13.00      12
+cv.rbridge              2.57          1.41          3.88      12
+
+Overall casewise median speedup: 2.58x (range 1.18-14.62x).
+Maximum coefficient/CV/count relative difference: 5.5105157e-14.
+Maximum prediction relative difference: 3.310494e-15.
+Selected penalties, support at 1e-7 and variable counts are exactly preserved.
+
+Limits: one machine, one data seed, fixed engine order, no randomized repetitions across sessions.
+The reference is the first repaired 1.0.3 candidate, not the original 1.0.2 archive.
+No accuracy ranking, convergence certificate, universal speedup or paper reproduction is claimed.
+The timer precision notice is retained in provenance.json; solver warnings were errors.
+The historical frozen driver and completed source outputs were not modified.
