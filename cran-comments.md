@@ -13,11 +13,21 @@ The documentation website is https://byuzbasi.github.io/rbridge/.
 Publication source archive SHA-256:
 `3c452f50cffb51e2b2a0a8c04fbdc37a567d068c75ca5feef885b08c83225042`.
 
-The final --as-cran, Windows R-release and Windows R-devel checks of this
-exact archive are being prepared. Their results will be recorded before
-submission. This archive differs from the preceding locally checked candidate
-only in DESCRIPTION URL fields and README publication links/instructions;
-all numerical R/C++ code, tests, help and vignette files are identical.
+R 4.6.0 on macOS arm64, R CMD check --as-cran: 0 errors, 0 warnings,
+2 notes; all 353 test expectations pass. Examples, vignette rebuilding,
+PDF manual, Rd syntax and cross-references pass. CRAN incoming feasibility
+was checked with remote access enabled. No URL issues were reported.
+
+* Incoming feasibility identifies an archived package/new submission.
+  Reinstatement is requested; the earlier archival issues have been addressed.
+* HTML manual validation is skipped because the local HTML Tidy is too old.
+  Rd checks, examples and PDF manual compilation pass.
+
+Windows R-release and Windows R-devel results for this exact archive remain
+pending. They will be reviewed and recorded before CRAN submission.
+This archive differs from the preceding locally checked candidate only in
+DESCRIPTION URL fields and README publication links/instructions; all
+numerical R/C++ code, tests, help and vignette files are identical.
 
 The preceding candidate (SHA-256
 `d076136551fefcce331406a370c892ea1f724a64f9395da7027f47944dcc2329`)
