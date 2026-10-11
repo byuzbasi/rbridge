@@ -23,8 +23,21 @@ was checked with remote access enabled. No URL issues were reported.
 * HTML manual validation is skipped because the local HTML Tidy is too old.
   Rd checks, examples and PDF manual compilation pass.
 
-Windows R-release and Windows R-devel results for this exact archive remain
-pending. They will be reviewed and recorded before CRAN submission.
+Final Windows Server 2022 x64 checks of this archive, GCC 14.3.0:
+
+* R-release, R 4.6.1 (2026-06-24 ucrt): 0 errors, 0 warnings, 1 note.
+  Report: https://win-builder.r-project.org/BCys6P241CSK/
+* R-devel, 2026-10-09 r90655 ucrt: 0 errors, 0 warnings, 1 note.
+  Report: https://win-builder.r-project.org/l4o3Dwv4z0ES/
+
+Each check passes all 353 test expectations, examples, vignette rebuilding,
+and PDF/HTML manuals. The single incoming note identifies this as an archived
+package/new submission and flags the cited authors' surnames Yuzbasi, Arashi
+and Akdeniz. These are correctly spelled proper names. Reinstatement is
+requested. The reports are associated with this final source by matching
+all source DESCRIPTION fields (including the unique packaging timestamp),
+the README and generated example code, with only Windows line endings/pager
+settings normalized for comparison.
 This archive differs from the preceding locally checked candidate only in
 DESCRIPTION URL fields and README publication links/instructions; all
 numerical R/C++ code, tests, help and vignette files are identical.
