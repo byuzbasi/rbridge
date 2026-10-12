@@ -1,6 +1,7 @@
-# Extract coefficients from a 'rbridge' object
+# Extract coefficients from a fitted rbridge object
 
-Makes predictions from a cross-validated 'rbridge' model
+Extract original-scale intercept and slope coefficients from a fitted
+rbridge object.
 
 ## Usage
 
@@ -13,63 +14,82 @@ coef(object, s = c("lambda.1se", "lambda.min"), ...)
 
 - object:
 
-  A 'rbridge' object.
+  Fitted object returned by
+  [`rbridge`](https://byuzbasi.github.io/rbridge/reference/rbridge.md),
+  with `p` predictors in its training design.
 
 - s:
 
-  Exact fitted lambda value(s), or a named selector. CV objects use
-  `lambda.min` or `lambda.1se`; prediction defaults to the former and
-  coefficient extraction to the latter. Path objects return all fitted
-  columns when `s` is omitted. For a path, `lambda.min` means the
-  smallest fitted lambda; `lambda.1se` requires CV.
+  Numeric fitted penalty value(s). Values must match `object$lambda`
+  exactly; no interpolation is used. Omitting this argument returns all
+  fitted penalties.
+
+  The character selector `lambda.min` requests the smallest fitted
+  penalty. Use a CV object for the selector `lambda.1se`.
 
 - ...:
 
-  Additional arguments for compatibility.
+  Additional arguments accepted for compatibility.
 
 ## Value
 
-Response predictions (a vector for one lambda, a matrix for several), a
-coefficient matrix, or nonzero indices over the entire path when
-`type = "nonzero"`.
+Numeric matrix with `p + 1` rows and one column per selected penalty,
+even when only one penalty is selected. The first row is `(Intercept)`;
+subsequent rows are original-scale slopes in the training predictor
+order.
+
+## Details
+
+The returned matrix retains its dimensions for a single selected
+penalty. Returned slopes are on the original predictor scale; the linear
+restrictions concern standardized slopes. See
+[`rbridge`](https://byuzbasi.github.io/rbridge/reference/rbridge.md) for
+converting scales before checking restriction residuals.
 
 ## See also
 
-[`predict.rbridge`](predict.rbridge.md)
+[`predict.rbridge`](https://byuzbasi.github.io/rbridge/reference/predict.rbridge.md),
+[`rbridge`](https://byuzbasi.github.io/rbridge/reference/rbridge.md)
 
 ## Author
 
-Bahadir Yuzbasi, Mohammad Arashi and Fikri Akdeniz  
+Bahadir Yuzbasi  
 Maintainer: Bahadir Yuzbasi <b.yzb@hotmail.com>
 
 ## Examples
 
 ``` r
-set.seed(2019) 
+# Reproducible synthetic demonstration: 100 observations, eight predictors.
+set.seed(2019)
 beta <- c(3, 1.5, 0, 0, 2, 0, 0, 0)
 p <- length(beta)
 beta <- matrix(beta, nrow = p, ncol = 1)
+n <- 100
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)
+y <- as.numeric(X %*% beta + rnorm(n))
+# A user-specified sum of standardized slopes: b[1] + b[2] + b[5] = 6.5.
+# This target is illustrative; it is not asserted to equal the generating sum.
+R1.mat <- matrix(c(1, 1, 0, 0, 1, 0, 0, 0), nrow = 1)
+r1.vec <- matrix(6.5, nrow = 1, ncol = 1)
 
-### Restricted Matrix and vector
-c1 <- c(1,1,0,0,1,0,0,0)
-R1.mat <- matrix(c1,nrow = 1, ncol = p)
-r1.vec <- as.matrix(c(6.5),1,1)
-
-n = 100
-X = matrix(rnorm(n*p),n,p)
-y = X%*%beta + rnorm(n) 
-
-######## Model 1 based on first restrictions
-model1 <- rbridge(X, y, q = 1, R1.mat, r1.vec, nlambda = 5)
-coef(model1,s='lambda.min')
-#>                   0.001
-#> (Intercept)  0.02754702
-#> V1           2.98095693
-#> V2           1.58225006
-#> V3           0.07489720
-#> V4          -0.08861955
-#> V5           1.99283183
-#> V6          -0.10001440
-#> V7           0.07373247
-#> V8          -0.02407676
+# Five penalties keep this help example fast; the default is 100.
+model1 <- rbridge(X, y, q = 1, R = R1.mat, r = r1.vec, nlambda = 5)
+# A single selected penalty still gives a coefficient matrix.
+coefficients <- coef(model1, s = model1$lambda[2])
+coefficients
+#>             26.8035044402758
+#> (Intercept)     1.288482e-02
+#> V1              2.983157e+00
+#> V2              1.579113e+00
+#> V3              5.156258e-05
+#> V4             -2.378501e-05
+#> V5              1.993807e+00
+#> V6             -3.666309e-04
+#> V7              3.309060e-05
+#> V8              0.000000e+00
+dim(coefficients)
+#> [1] 9 1
+# Omitting s extracts the full fitted coefficient path.
+dim(coef(model1))
+#> [1] 9 5
 ```

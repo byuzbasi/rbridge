@@ -1,6 +1,18 @@
 # Changelog
 
-## rbridge 1.0.3 (unreleased)
+## rbridge 1.0.4
+
+- Apply the same Armadillo OpenMP configuration to all C++ translation
+  units, including the generated Rcpp wrappers. This fixes the
+  inconsistent sparse matrix type definitions reported by CRAN’s GCC
+  link-time optimization check.
+- Preserve explicit parallelism across cross-validation folds, with
+  sequential Armadillo operations inside each fold. Estimation methods,
+  numerical kernels, public interfaces and defaults are unchanged.
+
+## rbridge 1.0.3
+
+CRAN release: 2026-10-11
 
 - Restore default prediction and coefficient extraction on current R
   versions.
@@ -27,8 +39,9 @@
 - Reuse CV data slices and compute prediction paths in one matrix
   multiplication. Request portable OpenMP flags where available, with a
   sequential fallback. Report the installed build capability with the
-  additive [`rbridge_info()`](../reference/rbridge_info.md) API. Worker
-  failures are propagated after threads finish.
+  additive
+  [`rbridge_info()`](https://byuzbasi.github.io/rbridge/reference/rbridge_info.md)
+  API. Worker failures are propagated after threads finish.
 - Add 36 frozen synthetic regression cases, independent
   constrained-ridge and uneven-fold CV checks, thread consistency tests
   and locally built guides.

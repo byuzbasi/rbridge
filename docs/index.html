@@ -14,7 +14,7 @@
 <meta property="og:title" content="rbridge · Restricted Bridge Estimation">
 <meta name="description" content="Bridge regression with linear coefficient restrictions, compiled solvers, and a clear R interface.">
 <meta property="og:description" content="Bridge regression with linear coefficient restrictions, compiled solvers, and a clear R interface.">
-<link rel="canonical" href="https://byuzbasi.github.io/rbridge/index.html"></head>
+</head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">rbridge</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">1.0.3</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">1.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,17 +60,20 @@
 <p>The methodology is described in <a href="https://doi.org/10.1007/s00500-021-05763-9" class="external-link">Yuzbasi, Arashi and Akdeniz (2021), <em>Penalized regression via the restricted bridge estimator</em></a>. The banner is decorative artwork.</p>
 <p>Read the <a href="https://byuzbasi.github.io/rbridge/">online documentation</a>, <a href="https://byuzbasi.github.io/rbridge/articles/getting-started.html">getting started guide</a> and <a href="https://byuzbasi.github.io/rbridge/reference/index.html">function reference</a>.</p>
 <div class="section level2">
-<h2 id="install-from-source">Install from source<a class="anchor" aria-label="anchor" href="#install-from-source"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>The package is <a href="https://cran.r-project.org/package=rbridge" class="external-link">currently archived on CRAN</a>. The 1.0.3 maintenance update is available from GitHub; CRAN reinstatement is being prepared. It requires R, a working C++ toolchain, and the Rcpp, RcppArmadillo and Matrix packages.</p>
-<p>Install the GitHub version from R with the optional <code>remotes</code> package:</p>
+<p>Install the current <a href="https://cran.r-project.org/package=rbridge" class="external-link">CRAN release</a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"byuzbasi/rbridge"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rbridge"</span><span class="op">)</span></span></code></pre></div>
+<p>Source installation requires R, a working C++ toolchain, and the Rcpp, RcppArmadillo and Matrix packages. The 1.0.4 maintenance update gives every C++ source file the same Armadillo configuration while preserving explicit parallelism across cross-validation folds.</p>
+<p>Install the GitHub version from R with the optional <code>remotes</code> package:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"byuzbasi/rbridge"</span><span class="op">)</span></span></code></pre></div>
 <p>Run this command in the package source directory:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">R</span> CMD INSTALL .</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">R</span> CMD INSTALL .</span></code></pre></div>
 <p>Alternatively, install the built source archive from R:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rbridge_1.0.3.tar.gz"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rbridge_1.0.4.tar.gz"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="penalty-geometry-and-estimator">Penalty geometry and estimator<a class="anchor" aria-label="anchor" href="#penalty-geometry-and-estimator"></a>
@@ -83,8 +86,8 @@
 <h2 id="a-small-working-example">A small working example<a class="anchor" aria-label="anchor" href="#a-small-working-example"></a>
 </h2>
 <p>This is a demonstration with synthetic data, not a reproduction of the paper’s reported numerical results. It compares penalty exponents <code>q = 0.5, 1, 2</code> using seed 2019, the same four folds and 100 logarithmically spaced penalties from 0.001 to 100 for every exponent. The 80 observations have 30 correlated predictors, three nonzero population slopes and Gaussian noise with standard deviation 0.75. This example was selected to illustrate an interior CV minimum; the pre-specified selection rule is documented in the getting started guide.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/byuzbasi/rbridge" class="external-link">rbridge</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://byuzbasi.github.io/rbridge/">rbridge</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2019</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">80</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">30</span></span>
@@ -242,17 +245,59 @@
 <li><a href="https://github.com/byuzbasi/rbridge" class="external-link">Source repository</a></li>
 <li><a href="https://github.com/byuzbasi/rbridge/issues" class="external-link">Report a reproducible issue</a></li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"rbridge"</span><span class="op">)</span></span></code></pre></div>
 <p>Yuzbasi, B., Arashi, M. and Akdeniz, F. (2021). Penalized regression via the restricted bridge estimator. <em>Soft Computing</em>, <strong>25</strong>, 8401-8416. <a href="https://doi.org/10.1007/s00500-021-05763-9" class="external-link">doi:10.1007/s00500-021-05763-9</a>.</p>
 <p>The package is licensed under GPL-3. Utility-function attribution inherited from the original source is retained.</p>
 <p>From a source-repository checkout with <code>rbridge</code> installed, build the site with the optional <code>pkgdown</code> tool and the repository’s documentation script:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"Rscript"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"--vanilla"</span>, <span class="st">"tools/build-site.R"</span>, <span class="st">"."</span>, <span class="st">"docs"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The site includes the working guide, curated function reference and validation scope. The script also renders reference equations as native MathML using Pandoc, so they can be read offline. Building it does not publish a website.</p>
 </div>
 
-  </main><aside class="col-md-3"></aside>
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://cran.r-project.org/package=rbridge" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/byuzbasi/rbridge/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/byuzbasi/rbridge/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
+<h2 data-toc-skip>License</h2>
+<ul class="list-unstyled">
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
+</ul>
+</div>
+
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+</ul>
+</div>
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing rbridge</a></li>
+</ul>
+</div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Bahadir Yuzbasi <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Mohammad Arashi <br><small class="roles"> Author </small>   </li>
+<li>Fikri Akdeniz <br><small class="roles"> Author </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
+</ul>
+</div>
+
+
+
+  </aside>
 </div>
 
 

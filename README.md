@@ -12,12 +12,18 @@ Read the [online documentation](https://byuzbasi.github.io/rbridge/),
 [getting started guide](https://byuzbasi.github.io/rbridge/articles/getting-started.html)
 and [function reference](https://byuzbasi.github.io/rbridge/reference/index.html).
 
-## Install from source
+## Installation
 
-The package is [currently archived on CRAN](https://cran.r-project.org/package=rbridge).
-The 1.0.3 maintenance update is available from GitHub; CRAN reinstatement is
-being prepared. It requires R,
-a working C++ toolchain, and the Rcpp, RcppArmadillo and Matrix packages.
+Install the current [CRAN release](https://cran.r-project.org/package=rbridge):
+
+```r
+install.packages("rbridge")
+```
+
+Source installation requires R, a working C++ toolchain, and the Rcpp,
+RcppArmadillo and Matrix packages. The 1.0.4 maintenance update gives every
+C++ source file the same Armadillo configuration while preserving explicit
+parallelism across cross-validation folds.
 
 Install the GitHub version from R with the optional `remotes` package:
 
@@ -34,7 +40,7 @@ R CMD INSTALL .
 Alternatively, install the built source archive from R:
 
 ```r
-install.packages("rbridge_1.0.3.tar.gz", repos = NULL, type = "source")
+install.packages("rbridge_1.0.4.tar.gz", repos = NULL, type = "source")
 ```
 
 ## Penalty geometry and estimator

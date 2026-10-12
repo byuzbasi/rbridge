@@ -1,4 +1,13 @@
-# rbridge 1.0.3 (unreleased)
+# rbridge 1.0.4
+
+* Apply the same Armadillo OpenMP configuration to all C++ translation units,
+  including the generated Rcpp wrappers. This fixes the inconsistent sparse
+  matrix type definitions reported by CRAN's GCC link-time optimization check.
+* Preserve explicit parallelism across cross-validation folds, with sequential
+  Armadillo operations inside each fold. Estimation methods, numerical kernels,
+  public interfaces and defaults are unchanged.
+
+# rbridge 1.0.3
 
 * Restore default prediction and coefficient extraction on current R versions.
 * Path objects return the full coefficient or prediction path when `s` is

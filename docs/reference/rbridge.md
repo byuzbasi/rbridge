@@ -1,8 +1,8 @@
-# Fit a Restricted Bridge Estimation
+# Fit a restricted bridge coefficient path
 
-Fit a restricted bridge-penalized least-squares path using local
-quadratic approximation. Computes coefficients over the fitted penalty
-grid using the historical thresholding and stopping rules.
+Fit a bridge-penalized least-squares path subject to user-supplied
+linear restrictions on standardized slopes, using local quadratic
+approximation.
 
 ## Usage
 
@@ -25,96 +25,114 @@ rbridge(
 
 - X:
 
-  Design matrix with n observation rows and p predictor columns.
+  Numeric design matrix with `n` observation rows and `p` predictor
+  columns. Supply finite values and predictors with nonzero variation;
+  omit an intercept column. A data frame is converted using
+  `model.matrix(~0+., X)`; restrictions and future predictions must use
+  the resulting predictor order.
 
 - y:
 
-  Numeric response vector with one value per observation.
+  Numeric response vector of length `n`, containing finite values.
 
 - q:
 
-  Bridge-penalty exponent in (0, 2\]. Values one and two give the L1 and
-  L2 penalty forms; fitting uses local quadratic approximation.
+  Bridge-penalty exponent, a finite number in `(0, 2]`. Values 1 and 2
+  specify the L1 and L2 penalty forms. Estimation uses local quadratic
+  approximation (LQA).
 
 - R:
 
-  Numeric matrix with m restriction rows and p predictor columns. Each
-  row defines one linear combination of standardized slopes; use
-  linearly independent rows.
+  Finite numeric matrix with `m` linearly independent restriction rows
+  and `p` predictor columns. Each row specifies a linear combination of
+  the standardized predictor coefficients, in the order of `X`. The
+  intercept is excluded.
 
 - r:
 
-  Target vector or one-column matrix with m values. Writing beta for the
-  p-dimensional standardized predictor-coefficient vector, the
-  restriction residual is zero when all supplied linear restrictions
-  hold: \$\$r - R\beta = 0.\$\$ This expression specifies the target
-  coefficient subspace; the intercept is excluded. Standardized
-  predictor coefficients have response units.
+  Finite numeric target vector of length `m`, or an `m` by 1 matrix. The
+  targets have the units of the response when `R` is dimensionless. See
+  Details for the coefficient scale and a residual check.
 
 - lambda.min:
 
-  The smallest value for lambda if `n>p` is `0.001` and `0.05`
-  otherwise.
+  Positive absolute endpoint of the automatically generated penalty
+  grid. The default is `0.001` when `n > p`, and `0.05` otherwise. This
+  argument is a penalty value, not a ratio. In CV results, the field
+  also named `lambda.min` instead denotes the selected penalty.
 
 - nlambda:
 
-  The number of lambda values - default is `100`
+  Number of automatically generated penalty values, an integer of at
+  least 2. The default is `100`; ignored when `lambda` is supplied.
 
 - lambda:
 
-  User-supplied nonnegative penalty sequence; generated internally when
-  omitted.
+  Optional nonempty numeric vector of finite, nonnegative penalty
+  values. Its order is retained. When supplied, it determines the fitted
+  path and overrides `nlambda` and the grid argument `lambda.min`.
 
 - eta:
 
-  Positive threshold used for coefficient elimination and the squared
-  coefficient-change stopping rule. The default is `1e-7`; it is
-  unchanged from the historical solver.
+  Positive numerical tolerance, with default `1e-7`. Used for
+  coefficient elimination and stopping on squared coefficient changes.
 
 - converge:
 
-  Initial convergence-distance value, retained for compatibility. The
-  default is `10^10`. The solver updates the squared Euclidean
-  coefficient change and stops when it is at most `eta`, or after the
-  historical iteration cap.
+  Nonnegative initial convergence-distance value, retained for
+  compatibility. The default is `1e10`. Iteration stops when the updated
+  squared coefficient change is at most `eta`, or at the historical cap.
 
 ## Value
 
-An object of class rbridge, a list with entries
+A list of class `rbridge` with components:
 
 - betas:
 
-  Coefficients computed over the path of lambda
+  Numeric coefficient matrix with `p + 1` rows and `length(lambda)`
+  columns, one column per fitted penalty. The first row is
+  `(Intercept)`; the remaining rows are original-scale slopes in
+  predictor order. Column names identify the fitted penalties.
 
 - lambda:
 
-  The lambda values which is given at the function
+  Numeric vector of penalties, in fitted column order.
 
 ## Details
 
-Predictors are centered and divided by their root-mean-square centered
-deviations. The restriction is imposed on the coefficients of these
-standardized predictors, not on the original-scale coefficients returned
-in `betas`. Here `R` has one column per predictor and one row per
-restriction; `r` contains the corresponding target values. The
-restriction rows must be linearly independent. The reconstructed
-intercept is not included in the restrictions. Check restriction
-residuals after accounting for predictor scales, especially when
-thresholding occurs.
+Predictors are centered and divided by their centered root-mean-square
+(RMS) deviations, using the observation count `n` as the divisor. The
+response is centered. The intercept is reconstructed after fitting, and
+returned coefficients are expressed on the original predictor scale. The
+generated penalties are logarithmically spaced between an internally
+computed starting value and the absolute endpoint `lambda.min`.
+Restrictions act on standardized slopes. To check a fitted
+original-scale slope vector, multiply it elementwise by the centered RMS
+deviations of the predictors before applying `R`. The resulting
+restriction residual is the fitted linear combination minus `r`; it
+should be examined with a numerical tolerance, particularly after
+coefficient thresholding. For example, a zero restriction on one slope
+has the same meaning on either scale, whereas a nonzero sum or contrast
+depends on the scales.
 
-In order to couple the bridge estimator with the restriction
-`R beta = r`, we solve the following optimization problem Here RSS
-denotes the residual sum of squares for the centered response and
-standardized design. The operator min denotes minimization over the
-slope vector beta; the q-indexed expression denotes the bridge penalty
-constraint. The following compact statement combines that penalty with
-the supplied linear restrictions, and is implemented through local
-quadratic approximation: \$\$\min RSS w.r.t \|\|\beta\|\|\_q and R\beta
-= r. \$\$ The exponent q controls the penalty shape; n is the
-observation count and p is the predictor count. See Section 3.1 of the
-cited article for the computation. The expression describes the
-estimator, not a guarantee of global convergence for every supplied
-dataset.
+Let \\Z\\ be the \\n\\ by \\p\\ centered, RMS-standardized design,
+\\y_c\\ the centered response vector of length \\n\\, and \\b\\ the
+\\p\\-dimensional standardized slope vector. For exponent \\q \in
+(0,2\]\\ and penalty weight \\\lambda \ge 0\\, Equation (1) defines the
+penalized least-squares target: \$\$\min\_{b:\\Rb=r}
+\left\\\\y_c-Zb\\\_2^2+\lambda\sum\_{j=1}^{p}\|b_j\|^q\right\\. \qquad
+(1)\$\$ In Equation (1), \\\\\cdot\\\_2^2\\ is the squared Euclidean
+norm, so its first term is the unnormalized residual sum of squares. The
+index \\j\\ runs over the predictors; the second term is the bridge
+penalty, with \\\lambda\\ controlling its weight relative to residual
+error. Here \\R\\ is an \\m\\ by \\p\\ matrix with independent rows and
+\\r\\ is the \\m\\-dimensional target vector. The condition \\Rb=r\\
+restricts the standardized slopes and excludes the intercept. The
+fitting routine applies the article's LQA updates, coefficient
+elimination and stopping rules. The criterion is nonconvex when \\q \<
+1\\, so the iterative result is not a guarantee of a global minimum. The
+getting-started vignette explains the penalty geometry and the fixed-LQA
+restriction correction.
 
 ## References
 
@@ -125,183 +143,69 @@ the restricted bridge estimator. Soft Computing, 25, 8401–8416.
 
 ## See also
 
-[`cv.rbridge`](cv.rbridge.md)
+[`cv.rbridge`](https://byuzbasi.github.io/rbridge/reference/cv.rbridge.md),
+[`coef.rbridge`](https://byuzbasi.github.io/rbridge/reference/coef.rbridge.md),
+[`predict.rbridge`](https://byuzbasi.github.io/rbridge/reference/predict.rbridge.md)
 
 ## Author
 
-Bahadir Yuzbasi, Mohammad Arashi and Fikri Akdeniz  
+Bahadir Yuzbasi  
 Maintainer: Bahadir Yuzbasi <b.yzb@hotmail.com>
 
 ## Examples
 
 ``` r
-set.seed(2019) 
+# Reproducible synthetic demonstration: 100 observations, eight predictors.
+set.seed(2019)
 beta <- c(3, 1.5, 0, 0, 2, 0, 0, 0)
 p <- length(beta)
 beta <- matrix(beta, nrow = p, ncol = 1)
+n <- 100
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)
+y <- as.numeric(X %*% beta + rnorm(n))
+# A user-specified sum of standardized slopes: b[1] + b[2] + b[5] = 6.5.
+# This target is illustrative; it is not asserted to equal the generating sum.
+R1.mat <- matrix(c(1, 1, 0, 0, 1, 0, 0, 0), nrow = 1)
+r1.vec <- matrix(6.5, nrow = 1, ncol = 1)
+# A second standardized-slope contrast: -b[1] + b[2] + b[5] = 0.5.
+R2.mat <- matrix(c(-1, 1, 0, 0, 1, 0, 0, 0), nrow = 1)
+r2.vec <- matrix(0.5, nrow = 1, ncol = 1)
+# Impose both independent restrictions together.
+R3.mat <- rbind(R1.mat, R2.mat)
+r3.vec <- matrix(c(6.5, 0.5), ncol = 1)
+# Alternatively, set the five inactive generating slopes to zero.
 p.active <- which(beta != 0)
+R4.mat <- diag(p)[-p.active, , drop = FALSE]
+r4.vec <- matrix(rep(0, p - length(p.active)), ncol = 1)
 
-### Restricted Matrix and vector
-### Res 1
-c1 <- c(1,1,0,0,1,0,0,0)
-R1.mat <- matrix(c1,nrow = 1, ncol = p)
-r1.vec <- as.matrix(c(6.5),1,1)
-### Res 2
-c2 <- c(-1,1,0,0,1,0,0,0)
-R2.mat <- matrix(c2,nrow = 1, ncol = p)
-r2.vec <- matrix(c(0.5),nrow = 1, ncol = 1)
-### Res 3
-R3.mat <- t(matrix(c(c1,c2),nrow = p, ncol = 2))
-r3.vec <- matrix(c(6.5,0.5),nrow = 2, ncol = 1)
-### Res 4
-R4.mat = diag(1,p,p)[-p.active,]
-r4.vec <- matrix(rep(0,p-length(p.active)),nrow = p-length(p.active), ncol = 1)
-
-n = 100
-X = matrix(rnorm(n*p),n,p)
-y = X%*%beta + rnorm(n) 
-
-######## Model 1 based on first restrictions
-model1 <- rbridge(X, y, q = 1, R1.mat, r1.vec, nlambda = 5)
-print(model1)
-#> $betas
-#>             802.149726533951 26.8035044402758 0.895628118436414
-#> (Intercept)       0.01283347     1.288482e-02        0.02613052
-#> V1                2.98320054     2.983157e+00        2.98088443
-#> V2                1.57870923     1.579113e+00        1.58117833
-#> V3                0.00000000     5.156258e-05        0.06838693
-#> V4                0.00000000    -2.378501e-05       -0.08380496
-#> V5                1.99412306     1.993807e+00        1.99382037
-#> V6                0.00000000    -3.666309e-04       -0.09347868
-#> V7                0.00000000     3.309060e-05        0.06577367
-#> V8                0.00000000     0.000000e+00       -0.01646600
-#>             0.0299270466039737       0.001
-#> (Intercept)         0.02750118  0.02754702
-#> V1                  2.98095453  2.98095693
-#> V2                  1.58221529  1.58225006
-#> V3                  0.07468659  0.07489720
-#> V4                 -0.08846393 -0.08861955
-#> V5                  1.99286393  1.99283183
-#> V6                 -0.09980300 -0.10001440
-#> V7                  0.07347469  0.07373247
-#> V8                 -0.02382978 -0.02407676
-#> 
-#> $lambda
-#>              [,1]
-#> [1,] 802.14972653
-#> [2,]  26.80350444
-#> [3,]   0.89562812
-#> [4,]   0.02992705
-#> [5,]   0.00100000
-#> 
-#> attr(,"class")
-#> [1] "rbridge"
-
-######## Model 2 based on second restrictions
-model2 <- rbridge(X, y, q = 1, R2.mat, r2.vec, nlambda = 5)
-print(model2)
-#> $betas
-#>             802.149726533951 26.8035044402758 0.895628118436414
-#> (Intercept)     -0.604299044    -5.331852e-02       -0.01932371
-#> V1               0.000000000     3.040784e+00        3.21128506
-#> V2               0.001544417     1.290959e+00        1.37968739
-#> V3               0.000000000     1.937483e-07        0.03804874
-#> V4               0.000000000    -6.240756e-06       -0.09166177
-#> V5               0.440031823     1.738332e+00        1.79685972
-#> V6               0.000000000    -1.703000e-05       -0.08794552
-#> V7               0.000000000     0.000000e+00        0.02778167
-#> V8               0.000000000    -2.705950e-04       -0.05853606
-#>             0.0299270466039737       0.001
-#> (Intercept)        -0.01667782 -0.01658913
-#> V1                  3.21755258  3.21776209
-#> V2                  1.38386987  1.38400982
-#> V3                  0.04418786  0.04439369
-#> V4                 -0.09697099 -0.09714834
-#> V5                  1.79821129  1.79825635
-#> V6                 -0.09492979 -0.09516339
-#> V7                  0.03631099  0.03659738
-#> V8                 -0.06531316 -0.06554013
-#> 
-#> $lambda
-#>              [,1]
-#> [1,] 802.14972653
-#> [2,]  26.80350444
-#> [3,]   0.89562812
-#> [4,]   0.02992705
-#> [5,]   0.00100000
-#> 
-#> attr(,"class")
-#> [1] "rbridge"
-
-######## Model 3 based on third restrictions
-model3 <- rbridge(X, y, q = 1, R3.mat, r3.vec, nlambda = 5)
-print(model3)
-#> $betas
-#>             802.149726533951 26.8035044402758 0.895628118436414
-#> (Intercept)       0.00145598     1.504089e-03       0.004867497
-#> V1                3.32994823     3.329948e+00       3.329948235
-#> V2                1.43778887     1.438289e+00       1.438659271
-#> V3                0.00000000     0.000000e+00       0.035278492
-#> V4                0.00000000    -7.452260e-05      -0.104069970
-#> V5                1.84076374     1.840330e+00       1.840007722
-#> V6                0.00000000    -4.777447e-04      -0.100546781
-#> V7                0.00000000     1.075132e-07       0.043748531
-#> V8                0.00000000    -9.811793e-07      -0.046910375
-#>             0.0299270466039737        0.001
-#> (Intercept)        0.006238754  0.006284733
-#> V1                 3.329948235  3.329948235
-#> V2                 1.439728643  1.439764461
-#> V3                 0.041560364  0.041771054
-#> V4                -0.108724504 -0.108879996
-#> V5                 1.839078877  1.839047765
-#> V6                -0.106866625 -0.107078002
-#> V7                 0.051461989  0.051720176
-#> V8                -0.054307284 -0.054554702
-#> 
-#> $lambda
-#>              [,1]
-#> [1,] 802.14972653
-#> [2,]  26.80350444
-#> [3,]   0.89562812
-#> [4,]   0.02992705
-#> [5,]   0.00100000
-#> 
-#> attr(,"class")
-#> [1] "rbridge"
-
-######## Model 4 based on fourth restrictions
-model4 <- rbridge(X, y, q = 1, R4.mat, r4.vec, nlambda = 5)
-print(model4)
-#> $betas
-#>             802.149726533951 26.8035044402758 0.895628118436414
-#> (Intercept)    -6.412489e-01      -0.03123568       0.005358115
-#> V1              1.232515e-03       2.84900284       2.960304124
-#> V2              0.000000e+00       1.43381164       1.554345409
-#> V3              0.000000e+00       0.00000000       0.000000000
-#> V4              0.000000e+00       0.00000000       0.000000000
-#> V5              3.132217e-05       1.87970617       1.974393656
-#> V6              0.000000e+00       0.00000000       0.000000000
-#> V7              0.000000e+00       0.00000000       0.000000000
-#> V8              0.000000e+00       0.00000000       0.000000000
-#>             0.0299270466039737       0.001
-#> (Intercept)        0.006580821 0.006621677
-#> V1                 2.964023247 2.964147519
-#> V2                 1.558372653 1.558507223
-#> V3                 0.000000000 0.000000000
-#> V4                 0.000000000 0.000000000
-#> V5                 1.977557539 1.977663258
-#> V6                 0.000000000 0.000000000
-#> V7                 0.000000000 0.000000000
-#> V8                 0.000000000 0.000000000
-#> 
-#> $lambda
-#>              [,1]
-#> [1,] 802.14972653
-#> [2,]  26.80350444
-#> [3,]   0.89562812
-#> [4,]   0.02992705
-#> [5,]   0.00100000
-#> 
-#> attr(,"class")
-#> [1] "rbridge"
+# Five penalties keep this help example fast; the default is 100.
+model1 <- rbridge(X, y, q = 1, R = R1.mat, r = r1.vec, nlambda = 5)
+model2 <- rbridge(X, y, q = 1, R = R2.mat, r = r2.vec, nlambda = 5)
+model3 <- rbridge(X, y, q = 1, R = R3.mat, r = r3.vec, nlambda = 5)
+model4 <- rbridge(X, y, q = 1, R = R4.mat, r = r4.vec, nlambda = 5)
+# Rows include the intercept; columns correspond to fitted penalties.
+dim(model1$betas)
+#> [1] 9 5
+# Extract the second fitted penalty exactly; no interpolation is performed.
+selected <- model1$lambda[2]
+coefficients <- coef(model1, s = selected)
+coefficients
+#>             26.8035044402758
+#> (Intercept)     1.288482e-02
+#> V1              2.983157e+00
+#> V2              1.579113e+00
+#> V3              5.156258e-05
+#> V4             -2.378501e-05
+#> V5              1.993807e+00
+#> V6             -3.666309e-04
+#> V7              3.309060e-05
+#> V8              0.000000e+00
+predict(model1, newx = X[1:5, , drop = FALSE], s = selected)
+#> [1]  -1.6230925   0.3471289  -1.5657036   2.6335804 -10.4459031
+# Convert returned slopes to standardized slopes before checking the target.
+x_centered <- sweep(X, 2, colMeans(X), "-")
+x_rms <- sqrt(colMeans(x_centered^2))
+standardized_slopes <- coefficients[-1, 1] * x_rms
+as.numeric(R1.mat %*% standardized_slopes - r1.vec)
+#> [1] 0
 ```

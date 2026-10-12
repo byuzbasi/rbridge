@@ -98,12 +98,12 @@ one matrix multiplication. Roundoff can differ from the historical order
 of operations, so compatibility is checked numerically rather than
 asserted to be bit-for-bit on every platform.
 
-[`rbridge_info()`](../reference/rbridge_info.md) reports the actual
-compiled OpenMP capability. The build uses R’s portable OpenMP flags and
-falls back to sequential CV when those flags are empty. No additional
-OpenMP runtime is installed by the package. Worker errors are collected
-and reported after the workers finish. Set BLAS threads to one before
-starting R to avoid nested parallelism.
+[`rbridge_info()`](https://byuzbasi.github.io/rbridge/reference/rbridge_info.md)
+reports the actual compiled OpenMP capability. The build uses R’s
+portable OpenMP flags and falls back to sequential CV when those flags
+are empty. No additional OpenMP runtime is installed by the package.
+Worker errors are collected and reported after the workers finish. Set
+BLAS threads to one before starting R to avoid nested parallelism.
 
 The development workspace supplies a separate timing driver with frozen
 seeds, isolated engine processes, warmups, timing shards, resume checks
@@ -135,10 +135,10 @@ one and the largest reference magnitude.
 
 | Interface | Median of case speed ratios | Range |
 |----|---:|---:|
-| [`bridge()`](../reference/bridge.md) | 3.14x | 1.52-14.62x |
-| [`rbridge()`](../reference/rbridge.md) | 2.59x | 1.18-3.93x |
-| [`cv.bridge()`](../reference/cv.bridge.md) | 2.99x | 1.31-13.00x |
-| [`cv.rbridge()`](../reference/cv.rbridge.md) | 2.57x | 1.41-3.88x |
+| [`bridge()`](https://byuzbasi.github.io/rbridge/reference/bridge.md) | 3.14x | 1.52-14.62x |
+| [`rbridge()`](https://byuzbasi.github.io/rbridge/reference/rbridge.md) | 2.59x | 1.18-3.93x |
+| [`cv.bridge()`](https://byuzbasi.github.io/rbridge/reference/cv.bridge.md) | 2.99x | 1.31-13.00x |
+| [`cv.rbridge()`](https://byuzbasi.github.io/rbridge/reference/cv.rbridge.md) | 2.57x | 1.41-3.88x |
 
 Each ratio divides the median baseline time by the median optimized
 time. Results apply to the recorded Apple M3 Pro, R 4.6.0 environment.
@@ -148,18 +148,22 @@ certify convergence, or compare directly with the original CRAN 1.0.2
 engine. The timer’s precision notice is retained in the provenance;
 solver warnings were treated as errors.
 
-Inspect the [report](benchmarks/REPORT.txt), [case
-comparisons](benchmarks/comparison.tsv), [raw timing
-repetitions](benchmarks/timings.tsv) and [protocol and
-environment](benchmarks/provenance.json). The GitHub preparation
-includes the frozen historical driver and reference source for this
-recorded comparison. Its engine hashes depend on installed build
-contents; rebuilding on another platform establishes a new signature.
-The current development driver uses byte ordering for file hashes,
-making new signatures independent of the operating system’s collation
-setting. The completed historical run remains verifiable with its frozen
-driver and `LC_ALL=en_US.UTF-8`; changing that driver invalidates its
-recorded signature.
+Inspect the
+[report](https://byuzbasi.github.io/rbridge/articles/benchmarks/REPORT.txt),
+[case
+comparisons](https://byuzbasi.github.io/rbridge/articles/benchmarks/comparison.tsv),
+[raw timing
+repetitions](https://byuzbasi.github.io/rbridge/articles/benchmarks/timings.tsv)
+and [protocol and
+environment](https://byuzbasi.github.io/rbridge/articles/benchmarks/provenance.json).
+The GitHub preparation includes the frozen historical driver and
+reference source for this recorded comparison. Its engine hashes depend
+on installed build contents; rebuilding on another platform establishes
+a new signature. The current development driver uses byte ordering for
+file hashes, making new signatures independent of the operating system’s
+collation setting. The completed historical run remains verifiable with
+its frozen driver and `LC_ALL=en_US.UTF-8`; changing that driver
+invalidates its recorded signature.
 
 ## Reproducing the published study
 

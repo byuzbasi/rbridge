@@ -12,9 +12,20 @@ rbridge_info()
 
 ## Value
 
-A list with `version`, the installed package version; `openmp`, a
-logical build capability; and `openmp_version`, the OpenMP specification
-date reported by the compiler (zero if absent).
+A list with three components:
+
+- version:
+
+  Installed package version, as a character string.
+
+- openmp:
+
+  Logical flag indicating compiled OpenMP support.
+
+- openmp_version:
+
+  OpenMP specification date reported by the compiler, or zero when
+  support is absent.
 
 ## Details
 
@@ -27,7 +38,7 @@ before starting R to avoid nested parallelism.
 ``` r
 rbridge_info()
 #> $version
-#> [1] "1.0.3"
+#> [1] "1.0.4"
 #> 
 #> $openmp
 #> [1] TRUE

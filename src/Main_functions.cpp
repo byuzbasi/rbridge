@@ -1,5 +1,4 @@
 // Parallelism is confined to CV folds; BLAS threads are controlled by the caller.
-#define ARMA_DONT_USE_OPENMP
 #include <RcppArmadillo.h>
 #include <stdexcept>
 #include <vector>

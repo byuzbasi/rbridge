@@ -1,8 +1,8 @@
 Package: rbridge
 Type: Package
 Title: Restricted Bridge Estimation
-Version: 1.0.3
-Date: 2026-10-10
+Version: 1.0.4
+Date: 2026-10-12
 Authors@R: c(
     person("Bahadir", "Yuzbasi", role = c("aut", "cre"),
            email = "b.yzb@hotmail.com"),

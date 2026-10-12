@@ -1,78 +1,54 @@
-## Reinstatement of an archived package
+## CRAN LTO/ASAN maintenance update
 
-Please reinstate rbridge with this 1.0.3 maintenance update. Version 1.0.2
-was archived on 2026-01-15. This update fixes deprecated Armadillo conversion,
-removes the obsolete C++11 request and unused dplyr dependency, and updates
-package authorship, the article citation, tests, help and vignettes.
+rbridge 1.0.4 responds to the CRAN check notice with a 2026-11-02 deadline.
+Version 1.0.3 was published on 2026-10-11. Its OpenMP builds gave the engine
+and generated Rcpp wrappers different Armadillo configurations, causing the
+reported state_type / SpMat One Definition Rule warnings under GCC LTO.
 
-The public source repository is https://github.com/byuzbasi/rbridge.
-The documentation website is https://byuzbasi.github.io/rbridge/.
+ARMA_DONT_USE_OPENMP is now set in both Makevars files for every C++
+translation unit. The file-local definition is removed. Explicit OpenMP
+parallelism across CV folds remains enabled. Numerical implementation bodies,
+R interfaces, defaults, restriction scale, seeds and test fixtures are unchanged.
 
-## Source candidate and checks
+Source archive SHA-256:
+e12194b1ffb8df813488e4312d2f2b7d5505ab101129bfb711f9149398772e67.
 
-Publication source archive SHA-256:
-`3c452f50cffb51e2b2a0a8c04fbdc37a567d068c75ca5feef885b08c83225042`.
+## Checks
 
-R 4.6.0 on macOS arm64, R CMD check --as-cran: 0 errors, 0 warnings,
-2 notes; all 353 test expectations pass. Examples, vignette rebuilding,
-PDF manual, Rd syntax and cross-references pass. CRAN incoming feasibility
-was checked with remote access enabled. No URL issues were reported.
+* R 4.6.0, macOS arm64, R CMD check --as-cran:
+  0 errors, 0 warnings, 2 explained notes; 353 test expectations pass.
+* Windows R-release 4.6.1, GCC 14.3.0:
+  0 errors, 0 warnings, 1 explained note; 353 test expectations pass.
+  https://win-builder.r-project.org/88XpELhaZzM1/
+* Windows R-devel 2026-10-10 r90659 ucrt, GCC 14.3.0:
+  0 errors, 0 warnings, 1 explained note; 353 test expectations pass.
+  https://win-builder.r-project.org/FTtaJ1w913jw/
 
-* Incoming feasibility identifies an archived package/new submission.
-  Reinstatement is requested; the earlier archival issues have been addressed.
-* HTML manual validation is skipped because the local HTML Tidy is too old.
-  Rd checks, examples and PDF manual compilation pass.
+All three checks pass examples, vignette rebuilding and the PDF manual.
+Windows HTML manual validation also passes. The Windows binary DESCRIPTION,
+including the unique packaging timestamp, README and generated examples match
+this exact source candidate.
 
-Final Windows Server 2022 x64 checks of this archive, GCC 14.3.0:
+The incoming note is "Days since last update: 1". This prompt maintenance
+submission addresses the CRAN check notice. The additional macOS note concerns
+an old local HTML Tidy; HTML validation passes on both Windows checks.
 
-* R-release, R 4.6.1 (2026-06-24 ucrt): 0 errors, 0 warnings, 1 note.
-  Report: https://win-builder.r-project.org/BCys6P241CSK/
-* R-devel, 2026-10-09 r90655 ucrt: 0 errors, 0 warnings, 1 note.
-  Report: https://win-builder.r-project.org/l4o3Dwv4z0ES/
+## Additional Linux compiler checks
 
-Each check passes all 353 test expectations, examples, vignette rebuilding,
-and PDF/HTML manuals. The single incoming note identifies this as an archived
-package/new submission and flags the cited authors' surnames Yuzbasi, Arashi
-and Akdeniz. These are correctly spelled proper names. Reinstatement is
-requested. The reports are associated with this final source by matching
-all source DESCRIPTION fields (including the unique packaging timestamp),
-the README and generated example code, with only Windows line endings/pager
-settings normalized for comparison.
-This archive differs from the preceding locally checked candidate only in
-DESCRIPTION URL fields and README publication links/instructions; all
-numerical R/C++ code, tests, help and vignette files are identical.
+Ubuntu Linux x86_64, GCC 11.4.0, R 4.3.0, RcppArmadillo 15.6.0-1:
 
-The preceding candidate (SHA-256
-`d076136551fefcce331406a370c892ea1f724a64f9395da7027f47944dcc2329`)
-passed R CMD check on R 4.6.0/macOS arm64 with 0 errors, 0 warnings, 0 notes
-and 353 passing test expectations. Examples, vignette rebuilding and the
-PDF manual passed. This was an ordinary local check, not --as-cran.
+* GCC LTO with -flto -Wodr -Werror=odr -Werror=lto-type-mismatch:
+  1.0.3 reproduces the reported type mismatch and fails the strict link;
+  1.0.4 compiles without those diagnostics and passes all 353 expectations.
+* GCC AddressSanitizer with -fsanitize=address -fno-omit-frame-pointer:
+  instrumented 1.0.4 passes all 353 expectations, including CV thread consistency.
+  A deliberate compiler-only heap overflow confirms ASAN is active.
+  Leak detection is disabled for the ordinary R process; memory-access checks
+  remain enabled. This is package instrumentation, not a sanitizer-built R.
 
-Earlier Windows R-release and R-devel checks of the same numerical code
-passed with 0 errors, 0 warnings and 1 note each (353 test expectations).
-Their archive SHA-256 was
-`b5dd215ae082216fef7436c4bf7ec527af0b4bdf564930166bba06577ee508c9`.
-Those reports precede the final documentation and authorship changes.
-The incoming note concerned reinstatement of an archived package and the
-surnames Yuzbasi, Arashi and Akdeniz in the published article citation.
-
-## Validation scope
-
-The estimator, standardized restriction scale, preprocessing, contiguous
-folds, historical CV error-bar formula, thresholds, iteration cap and API
-are preserved. The default penalty path contains 100 lambdas. Documentation
-explains coefficient scales, exact fitted-penalty selection, CV defaults,
-return dimensions, and the illustrative restriction targets. Small help
-examples use five penalties and three folds where applicable.
-
-A completed serial benchmark contains 96 validated shards and 48 passing
-comparisons with the first repaired 1.0.3 candidate. The maximum relative
-coefficient/CV difference is 5.51e-14. Timing claims are limited to the
-recorded designs and environment. The benchmark is development tooling
-and is not executed during package checks. No full paper reproduction or
-production simulation is claimed.
-
-The package and published-article citation retain Bahadir Yuzbasi, Mohammad
-Arashi and Fikri Akdeniz. Bahadir Yuzbasi is the sole maintainer; the website
-footer identifies him as code and website developer. Existing utility-code
-attribution to glmnet contributors is preserved.
+The original CRAN GCC-ASAN detail log currently returns HTTP 404. The 1.0.3
+smoke did not reproduce an ASAN diagnostic in this local toolchain, which is
+older than the reported GCC 16 LTO environment; no unseen diagnostic or exact
+CRAN-environment reproduction is claimed. The 1.0.4 sanitizer result above is
+measured. Historical benchmark outputs are preserved; no production run was
+performed for this maintenance update.

@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "Please cite the published article when using rbridge."
 type: software
 title: "rbridge: Restricted Bridge Estimation"
-version: 1.0.3
+version: 1.0.4
 license: GPL-3.0-only
 repository-code: "https://github.com/byuzbasi/rbridge"
 authors:
